@@ -59,6 +59,8 @@ async fn main() -> std::io::Result<()> {
                     .allow_any_method()
                     .allow_any_origin(),
             )
+            .service(web::scope("/api").route("/index.html", web::get().to(index)))
+            .service(echo)
             // 提供 favicon.ico
             .route("/favicon.ico", web::get().to(|| async {
                 NamedFile::open("./fd/app/dist/favicon.ico")
@@ -73,8 +75,7 @@ async fn main() -> std::io::Result<()> {
             }))
             // 其他页面服务
             .route("/{filename}", web::get().to(serve_page))
-            .service(web::scope("/api").route("/index.html", web::get().to(index)))
-            .service(echo)
+
     })
     .bind(("0.0.0.0", 8050))?
     .run()

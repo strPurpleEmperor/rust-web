@@ -7,18 +7,23 @@
     "check": "biome check --write",
     "dev": "rsbuild dev",
     "format": "biome format --write",
-    "preview": "rsbuild preview"
+    "preview": "rsbuild preview",
+    "add-wasm-pkg": "pnpm i ../wasm/pkg"
   },
   "dependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "antd-mobile": "^5.38.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "wasm": "link:../wasm/pkg"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.3",
     "@rsbuild/core": "^1.1.8",
+    "@rsbuild/plugin-less": "^1.1.0",
     "@rsbuild/plugin-react": "^1.0.7",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.1",
+    "eruda": "^3.4.1",
     "typescript": "^5.7.2"
   }
 }
