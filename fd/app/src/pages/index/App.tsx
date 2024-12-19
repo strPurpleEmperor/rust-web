@@ -1,9 +1,12 @@
 import './App.css';
-import { MirrorDirection, mirror_image_async } from 'wasm';
+import init, { MirrorDirection, mirror_image_async } from 'wasm';
 import styles from './index.module.less';
 import { Button, Card, Radio, Space, Toast } from 'antd-mobile';
-import { ChangeEvent, useCallback, useState } from 'react';
+import {ChangeEvent, useCallback, useEffect, useState} from 'react';
 const App = () => {
+  useEffect(() => {
+    init().then(console.log)
+  }, [])
   const [loading, setLoading] = useState(false);
   const [originUrl, setOriginUrl] = useState<string>();
   const [url, setUrl] = useState<string>();

@@ -1,12 +1,19 @@
+use image::codecs::gif::{GifDecoder, GifEncoder, Repeat};
+use image::ImageFormat::Png;
+use image::ImageReader;
+use image::{AnimationDecoder, Delay, DynamicImage, Frame, ImageFormat, RgbaImage};
+use js_sys::{Promise, Uint8Array};
+use std::io::{BufReader, Cursor};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::future_to_promise;
-use js_sys::{Promise, Uint8Array};
-use image::{DynamicImage, ImageFormat, RgbaImage, Frame, AnimationDecoder, Delay, io::Reader as ImageReader};
-use image::codecs::gif::{GifDecoder, GifEncoder, Repeat};
-use std::io::{Cursor, BufReader};
-use image::ImageFormat::Png;
-use crate::mirror::MirrorDirection;
-
+#[wasm_bindgen]
+#[derive(Debug, Clone)]
+pub enum MirrorDirection {
+    LeftToRight,
+    RightToLeft,
+    TopToBottom,
+    BottomToTop,
+}
 #[wasm_bindgen]
 pub fn mirror_image_async(input_data: Uint8Array, direction: MirrorDirection) -> Promise {
     let input_vec = input_data.to_vec();
@@ -19,7 +26,10 @@ pub fn mirror_image_async(input_data: Uint8Array, direction: MirrorDirection) ->
     })
 }
 
-fn mirror_image_process(input_vec: Vec<u8>, direction: MirrorDirection) -> Result<Uint8Array, JsValue> {
+fn mirror_image_process(
+    input_vec: Vec<u8>,
+    direction: MirrorDirection,
+) -> Result<Uint8Array, JsValue> {
     // 尝试解析图像格式
     let cursor = Cursor::new(input_vec.clone());
     let format = ImageReader::new(BufReader::new(cursor))
@@ -70,7 +80,11 @@ fn mirror_gif(input_vec: Vec<u8>, direction: MirrorDirection) -> Result<Uint8Arr
     Ok(Uint8Array::from(&output_data[..]))
 }
 
-fn mirror_static_image(input_vec: Vec<u8>, direction: MirrorDirection, format: ImageFormat) -> Result<Uint8Array, JsValue> {
+fn mirror_static_image(
+    input_vec: Vec<u8>,
+    direction: MirrorDirection,
+    format: ImageFormat,
+) -> Result<Uint8Array, JsValue> {
     let cursor = Cursor::new(input_vec);
 
     // 解码静态图像
