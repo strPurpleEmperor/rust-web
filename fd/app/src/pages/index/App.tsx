@@ -1,31 +1,24 @@
 import './App.css';
-import { mirror, mirror_gif, MirrorDirection } from 'wasm';
+import { MirrorDirection, mirror_image_async } from 'wasm';
 import styles from './index.module.less';
 import { Button, Card, Radio, Space, Toast } from 'antd-mobile';
 import { ChangeEvent, useCallback, useState } from 'react';
 
 const App = () => {
-  const [isGif, setIsGif] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [originUrl, setOriginUrl] = useState<string>();
   const [url, setUrl] = useState<string>();
   const [file, setFile] = useState<File>();
   const [direct, setDirect] = useState<MirrorDirection>(
     MirrorDirection.LeftToRight,
   );
-  const uploadFile = useCallback(
-    (e: ChangeEvent<HTMLInputElement>, isGif = false) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      // 读取文件为 Blob URL
-      const blobUrl = URL.createObjectURL(file);
-      setOriginUrl(blobUrl);
-      setFile(file);
-      setIsGif(isGif);
-    },
-    [],
-  );
-  const uploadGifFile = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    uploadFile(e, true);
+  const uploadFile = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    // 读取文件为 Blob URL
+    const blobUrl = URL.createObjectURL(file);
+    setOriginUrl(blobUrl);
+    setFile(file);
   }, []);
   return (
     <Card className="content" title="镜像图片">
@@ -35,7 +28,7 @@ const App = () => {
         </div>
       </Card>
       <Space direction="vertical">
-        <Radio.Group onChange={(val: any) => setDirect(val)}>
+        <Radio.Group value={direct} onChange={(val: any) => setDirect(val)}>
           <Space wrap>
             <Radio value={MirrorDirection.LeftToRight}>从左往右</Radio>
             <Radio value={MirrorDirection.RightToLeft}>从右往左</Radio>
@@ -48,32 +41,35 @@ const App = () => {
             <input
               className={styles.upload}
               type="file"
-              accept="image/jpeg,image/png"
+              accept="image/*"
               onChange={uploadFile}
             />
-            上传jpeg、png
+            上传图片
           </Button>
-          <Button className={styles.btn} color="primary">
-            <input
-              className={styles.upload}
-              type="file"
-              accept="image/gif"
-              onChange={uploadGifFile}
-            />
-            上传gif
-          </Button>
-        </Space>
-        <Space>
           <Button
             color="success"
-            onClick={async () => {
+            loading={loading}
+            onClick={() => {
               if (!file) return;
-              const gifBuffer = await file.arrayBuffer();
-              const mirrorFn = isGif ? mirror_gif : mirror;
-              const uint8Array = mirrorFn(new Uint8Array(gifBuffer), direct);
-              const blob = new Blob([uint8Array], { type: file.type });
-              const blobUrl = URL.createObjectURL(blob);
-              setUrl(blobUrl);
+              setLoading(true);
+              file
+                .arrayBuffer()
+                .then((gifBuffer) => {
+                  return mirror_image_async(
+                    new Uint8Array(gifBuffer),
+                    direct,
+                  ).then((uint8Array) => {
+                    const blob = new Blob([uint8Array], { type: file.type });
+                    const blobUrl = URL.createObjectURL(blob);
+                    setUrl(blobUrl);
+                  });
+                })
+                .catch((e) => {
+                  Toast.show({ content: e });
+                })
+                .then(() => {
+                  setLoading(false);
+                });
             }}
           >
             开始转换

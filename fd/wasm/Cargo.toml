@@ -22,6 +22,8 @@ web-sys = { version = "0.3.76", features = ["ImageData"] }
 console = "0.15.10"
 js-sys = "0.3.76"
 image = { version = "0.25.5", features = ["gif","default"]}
+wasm-bindgen-futures = "0.4.49"
+tokio = "1.42.0"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.34"
