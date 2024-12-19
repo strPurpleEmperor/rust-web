@@ -1,7 +1,7 @@
 import './App.css';
 import { mirror, mirror_gif, MirrorDirection } from 'wasm';
 import styles from './index.module.less';
-import { Button, Card, Radio, Space } from 'antd-mobile';
+import { Button, Card, Radio, Space, Toast } from 'antd-mobile';
 import { ChangeEvent, useCallback, useState } from 'react';
 
 const App = () => {
@@ -63,7 +63,7 @@ const App = () => {
             上传gif
           </Button>
         </Space>
-        <div>
+        <Space>
           <Button
             color="success"
             onClick={async () => {
@@ -78,7 +78,30 @@ const App = () => {
           >
             开始转换
           </Button>
-        </div>
+          <Button
+            color="primary"
+            onClick={() => {
+              if (!file) return;
+              if (!url) {
+                Toast.show({ content: '没有图片可以下载' });
+                return;
+              }
+              const link = document.createElement('a');
+              link.download = file.name;
+              link.href = url;
+              // 将链接添加到文档中
+              document.body.appendChild(link);
+
+              // 自动触发点击事件
+              link.click();
+
+              // 移除链接元素
+              document.body.removeChild(link);
+            }}
+          >
+            下载图片
+          </Button>
+        </Space>
       </Space>
       <Card title="转换后的图片">
         {url && <img className={styles.imgWrap} src={url} alt="" />}
