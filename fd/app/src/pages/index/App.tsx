@@ -2,11 +2,11 @@ import './App.css';
 import init, { MirrorDirection, mirror_image_async } from 'wasm';
 import styles from './index.module.less';
 import { Button, Card, Radio, Space, Toast } from 'antd-mobile';
-import {ChangeEvent, useCallback, useEffect, useState} from 'react';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 const App = () => {
   useEffect(() => {
-    init().then(console.log)
-  }, [])
+    init().then(console.log);
+  }, []);
   const [loading, setLoading] = useState(false);
   const [originUrl, setOriginUrl] = useState<string>();
   const [url, setUrl] = useState<string>();
@@ -56,15 +56,14 @@ const App = () => {
               setLoading(true);
               file
                 .arrayBuffer()
-                .then((gifBuffer) => {
-                  return mirror_image_async(
+                .then(async (gifBuffer) => {
+                  const uint8Array = await mirror_image_async(
                     new Uint8Array(gifBuffer),
                     direct,
-                  ).then((uint8Array) => {
-                    const blob = new Blob([uint8Array], { type: file.type });
-                    const blobUrl = URL.createObjectURL(blob);
-                    setUrl(blobUrl);
-                  });
+                  );
+                  const blob = new Blob([uint8Array], { type: file.type });
+                  const blobUrl = URL.createObjectURL(blob);
+                  setUrl(blobUrl);
                 })
                 .catch((e) => {
                   Toast.show({ content: e });
