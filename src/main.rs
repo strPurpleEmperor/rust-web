@@ -1,13 +1,12 @@
 use actix_cors::Cors;
+use actix_files as fs;
+use actix_files::NamedFile;
 use actix_web::{get, post, web, App, HttpRequest, HttpResponse, HttpServer, Responder};
 use serde_json::{json, Value};
-use actix_files::NamedFile;
-use actix_files as fs;
 #[get("/")]
 async fn hello() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
 }
-
 
 #[post("/echo")]
 async fn echo(req_body: web::Json<Value>) -> impl Responder {
@@ -62,20 +61,23 @@ async fn main() -> std::io::Result<()> {
             .service(web::scope("/api").route("/index.html", web::get().to(index)))
             .service(echo)
             // 提供 favicon.ico
-            .route("/favicon.ico", web::get().to(|| async {
-                NamedFile::open("./fd/app/dist/favicon.ico")
-            }))
+            .route(
+                "/favicon.ico",
+                web::get().to(|| async { NamedFile::open("./fd/app/dist/favicon.ico") }),
+            )
             // 静态资源服务 (例如 CSS 和 JS)
             .service(fs::Files::new("/static", "./fd/app/dist/static").show_files_listing())
             // 首页服务
-            .route("/", web::get().to(|| async {
-                HttpResponse::Ok()
-                    .content_type("text/html; charset=utf-8")
-                    .body(std::fs::read_to_string("./fd/app/dist/index.html").unwrap())
-            }))
+            .route(
+                "/",
+                web::get().to(|| async {
+                    HttpResponse::Ok()
+                        .content_type("text/html; charset=utf-8")
+                        .body(std::fs::read_to_string("./fd/app/dist/index.html").unwrap())
+                }),
+            )
             // 其他页面服务
             .route("/{filename}", web::get().to(serve_page))
-
     })
     .bind(("0.0.0.0", 8050))?
     .run()
