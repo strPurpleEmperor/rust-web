@@ -18,7 +18,7 @@ const tabs = [
   // },
   {
     key: 'key2',
-    title: 'heic图片转换',
+    title: '图片格式转换',
     icon: <UnorderedListOutline />,
   },
   // {
@@ -53,9 +53,9 @@ const ImageTools = () => {
       </TabBar>
       {tab === 'key2' && (
         <div>
-          <Card title="上传heic图片">
+          <Card title="上传图片">
             <ImageUploader
-              accept="image/heic"
+              accept="image/*"
               style={{ objectFit: 'contain' }}
               maxCount={1}
               upload={(file) => {

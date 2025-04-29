@@ -4,6 +4,7 @@ mod pages;
 mod tools;
 mod users;
 
+use crate::heic::convert_heic;
 use crate::mysql::creat_conn;
 use crate::pages::serve_page;
 use crate::tools::{echo, index};
@@ -12,7 +13,6 @@ use actix_cors::Cors;
 use actix_files as fs;
 use actix_files::NamedFile;
 use actix_web::{web, App, HttpResponse, HttpServer};
-use crate::heic::convert_heic;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
