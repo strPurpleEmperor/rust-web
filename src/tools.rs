@@ -1,6 +1,5 @@
 use actix_web::{get, post, web, HttpResponse, Responder};
 use serde_json::{json, Value};
-
 #[post("/echo")]
 pub async fn echo(req_body: web::Json<Value>) -> impl Responder {
     let received_data = req_body.as_object().cloned();

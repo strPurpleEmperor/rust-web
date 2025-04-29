@@ -1,3 +1,4 @@
+mod heic;
 mod mysql;
 mod pages;
 mod tools;
@@ -11,13 +12,10 @@ use actix_cors::Cors;
 use actix_files as fs;
 use actix_files::NamedFile;
 use actix_web::{web, App, HttpResponse, HttpServer};
-use std::env;
+use crate::heic::convert_heic;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    for (key, value) in env::vars() {
-        println!("{}: {}", key, value);
-    }
     let pool = creat_conn().await;
 
     HttpServer::new(move || {
@@ -32,7 +30,8 @@ async fn main() -> std::io::Result<()> {
             .service(
                 web::scope("/api")
                     .route("/index.html", web::get().to(index))
-                    .service(get_users),
+                    .service(get_users)
+                    .service(convert_heic),
             )
             .service(echo)
             .route(

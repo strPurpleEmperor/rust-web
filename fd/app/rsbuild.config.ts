@@ -8,6 +8,7 @@ export default defineConfig({
     entry: {
       index: './src/pages/index/index.tsx',
       user: './src/pages/user/index.tsx',
+      imageTools: './src/pages/image-tools/index.tsx',
     },
   },
   output: {
